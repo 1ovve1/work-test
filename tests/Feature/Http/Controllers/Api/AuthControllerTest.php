@@ -21,9 +21,9 @@ class AuthControllerTest extends TestCase
 
         $response = $this->postJson(route('auth.registration'), [
             'email' => $user->email,
+            'gender' => $user->gender,
             'password' => $password,
             'password_confirmation' => $password,
-            'gender' => fake()->randomElement(GenderEnum::cases())->value
         ]);
 
         $response->assertStatus(Response::HTTP_CREATED)->assertJsonStructure([
@@ -32,5 +32,21 @@ class AuthControllerTest extends TestCase
             ]
         ]);
         $this->assertModelExists(User::where('email', $user->email)->first());
+    }
+
+    public function test_profile(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->getJson(route('auth.profile'));
+
+        $response->assertStatus(Response::HTTP_OK)
+            ->assertJson([
+                'data' => [
+                    'email' => $user->email,
+                    'gender' => $user->gender->value,
+                ]
+            ]);
     }
 }

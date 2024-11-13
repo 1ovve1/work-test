@@ -10,4 +10,8 @@ Route::get('/user', function (Request $request) {
 
 Route::name('auth.')->group(function () {
     Route::post('/registration', [AuthController::class, 'registration'])->name('registration');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
+    });
 });
